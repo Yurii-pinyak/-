@@ -1,0 +1,39 @@
+#include <iostream>
+#include <vector>
+
+// Функція для обчислення розділених різниць
+double divided_difference(std::vector<double> nodes, std::vector<double> values, int n, int i, int j) {
+    if (n == 0) {
+        return (values[i] - values[j]) / (nodes[i] - nodes[j]);
+    } else {
+        return (divided_difference(nodes, values, n - 1, i, j) - divided_difference(nodes, values, n - 1, i - 1, j - 1)) / (nodes[i] - nodes[j]);
+    }
+}
+
+// Функція для обчислення похідної інтерполяційного многочлена Ньютона за допомогою методу невизначених коефіцієнтів
+double newton_interpolation_derivative(std::vector<double> nodes, std::vector<double> values, int n, double point) {
+    double result = 0.0;
+    for (int i = 0; i < n; i++) {
+        double term = values[i];
+        for (int j = 0; j < i; j++) {
+            term *= (point - nodes[j]);
+        }
+        term *= divided_difference(nodes, values, i, i, 0);
+        result += term;
+    }
+    return result;
+}
+
+int main() {
+    // Задані вузли і значення функції
+    std::vector<double> nodes = {1.0, 2.0, 3.0, 4.0, 5.0};
+    std::vector<double> values = {0.0, 1.0, 8.0, 27.0, 64.0};
+    int n = nodes.size(); // Кількість вузлів
+
+    double point = 2.5; // Точка, в якій обчислюємо похідну
+
+    double derivative = newton_interpolation_derivative(nodes, values, n, point);
+    std::cout << "Похідна в точці x = " << point << " дорівнює " << derivative << std::endl;
+
+    return 0;
+}
